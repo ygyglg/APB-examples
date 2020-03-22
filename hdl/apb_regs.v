@@ -52,8 +52,18 @@ module apb_regs (
 wire apb_write = psel & penable & pwrite;
 wire apb_read  = psel & ~pwrite;
 
-   assign pready  = 1'b1;
+   //assign pready  = 1'b1;
    assign pslverr = 1'b0;
+   
+   // add pready logic 20200322
+   always@(posedge pclk or negedge reset_n)begin
+	if(!reset_n)
+	pready <= 1'b1;
+	else if(pel && !pwrite && !penable)
+	pready <= 1'b0;
+	else
+	pready <= 1'b1;
+   end
    
    always @(posedge pclk or negedge reset_n)
    begin
